@@ -8,6 +8,8 @@ import vn.amisoft.microservice.customer.model.Customer;
 import vn.amisoft.microservice.customer.repository.CustomerRepository;
 import vn.amisoft.microservice.customer.response.FraudCheckResponse;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class CustomerService {
@@ -20,12 +22,16 @@ public class CustomerService {
         customer.setLastName(customerRequest.getLastName());
         customer.setEmail(customerRequest.getEmail());
         customerRepository.saveAndFlush(customer);
-        FraudCheckResponse fraudCheckResponse = restTemplate.getForObject("http://localhost:8081/api/v1/fraud-check/{customerId}", FraudCheckResponse.class, customer.getId());
+        FraudCheckResponse fraudCheckResponse = restTemplate.getForObject("http://FRAUD/api/v1/fraud-check/{customerId}", FraudCheckResponse.class, customer.getId());
 
         if (fraudCheckResponse != null && fraudCheckResponse.getIsFraudster()){
             throw new IllegalStateException("fraudster");
         }
 
 
+    }
+
+    public List<Customer> all() {
+        return customerRepository.findAll();
     }
 }
